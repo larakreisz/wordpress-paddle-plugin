@@ -27,9 +27,19 @@ if (!defined('WPINC'))
  * Define plugin name to use as global inside the plugin files
  * Rename this for plugin and update it as you required to change the plugin name for new versions.
  */
-define('LARA_CONNECTOR_NAME', 'LARA_CONNECTOR');
+ 
+ //Enqueue Paddle Checkout
+ add_action( 'wp_enqueue_scripts', 'enqueue_paddle_scripts' );
+ function enqueue_paddle_scripts() {
+    wp_register_script( 'paddle-js', 'https://cdn.paddle.com/paddle/paddle.js', null, null, true );
+    wp_enqueue_script( 'paddle-js' );
+}
 
+
+ //Connect Paddle and WordPress
+define('LARA_CONNECTOR_NAME', 'LARA_CONNECTOR');
 define('LARA_CONNECTOR_NAMESPACE', "lara-connector/v1");
+
 add_action('rest_api_init', 'register_routes');
 
 function register_routes() {
@@ -43,6 +53,7 @@ register_rest_route(LARA_CONNECTOR_NAMESPACE, '/paddlewebhooks/task', array(
 function paddlewebhooks_task_action(\WP_REST_Request $request) {
 	
 $data = json_decode($request->get_body(), true);
+
 if (!$data) {
     $data = $_REQUEST;
     }
