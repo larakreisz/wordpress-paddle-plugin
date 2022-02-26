@@ -97,3 +97,91 @@ echo json_encode([
 	
 
 }
+
+
+<?php
+
+/*
+ * The plugin bootstrap file
+ * 
+ * This file is read by WordPress to generate the plugin information in the plugin
+ * admin area. This file also includes all of the dependencies used by the plugin,
+ * registers the activation and deactivation functions, and defines a function
+ * that starts the plugin.
+ *
+ * @link                https://github.com/larakreisz
+ * @since               December 07, 2021
+ * @package             Lara Rest Plugin
+ * 
+ * @wordpress-plugin
+ * Plugin Name:         WordPress Paddle Plugin
+ * Plugin URI:          https://test.cuteberry.de/
+ * Description:         The plugin connects WordPress and Paddle and allows you to perform custom action after payment.
+ * Version:             1.0
+ * Author:              Lara Kreisz
+ * Author URI:          https://github.com/larakreisz
+ */
+if (!defined('WPINC'))
+    die;
+
+/**
+ * Define plugin name to use as global inside the plugin files
+ * Rename this for plugin and update it as you required to change the plugin name for new versions.
+ */
+
+
+// 1. Enqueue Paddle Checkout
+ 
+ add_action( 'wp_enqueue_scripts', 'enqueue_paddle_scripts' );
+ function enqueue_paddle_scripts() {
+    wp_register_script( 'paddle-js', 'https://cdn.paddle.com/paddle/paddle.js', null, null, true );
+    wp_enqueue_script( 'paddle-js' );
+ }
+ 
+
+
+ // 2. Connect Paddle and WordPress
+define('LARA_CONNECTOR_NAMESPACE', "lara-connector/v1");
+
+add_action('rest_api_init', 'register_routes');
+function register_routes() {
+register_rest_route(LARA_CONNECTOR_NAMESPACE, '/paddlewebhooks/task', array(
+   'methods' => 'POST',
+   'callback' => 'paddlewebhooks_task_action',
+   'permission_callback' => '__return_true'
+    ));
+}
+
+
+function paddlewebhooks_task_action() {
+
+$data = $_POST;
+$passthrough = json_decode(stripslashes($data['passthrough']), true);
+$locationID = $passthrough["reitanlage"];
+$eventID = $passthrough["veranstaltung"];
+			
+update_post_meta($eventID, 'wpcf-paddle-payment-location-id', $locationID . '[success]');
+update_post_meta($eventID, 'wpcf-paddle-payment-event-id', $eventID . '[success]');
+	
+if (isset($data["product_id"]) && !empty($data["product_id"])) {	
+update_post_meta($eventID, 'wpcf-paddle-payment-product-id', $data["product_id"] . '[success]');	
+}
+
+if (isset($data["email"]) && !empty($data["email"])) {
+update_post_meta($eventID, 'wpcf-paddle-payment-email', $data["email"] . '[success]' . ' / ' . $verification);
+}
+	
+
+
+
+   
+echo json_encode([
+        "code" => 200,
+        "status" => "Success",
+        "message" => "Meta data updated successfully.",
+        "data" => $data
+    ]);
+    exit;	  
+	
+
+}
