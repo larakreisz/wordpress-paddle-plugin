@@ -54,26 +54,36 @@ register_rest_route(LARA_CONNECTOR_NAMESPACE, '/paddlewebhooks/task', array(
 
 function paddlewebhooks_task_action() {
 
-$data = $_POST;
+$fields = $_POST;
 
-if (isset($data['passthrough']) && !empty($data['passthrough'])) {
+if (isset($fields["passthrough"]) && !empty($fields["passthrough"])) {
 
-$passthrough = json_decode(stripslashes($data['passthrough']), true);
+// alle Variablen, die man so später braucht einsammeln
+$passthrough = json_decode(stripslashes($fields['passthrough']), true);
 $locationID = $passthrough["reitanlage"];
 $eventID = $passthrough["veranstaltung"];
-			
-update_post_meta($eventID, 'wpcf-paddle-payment-location-id', $locationID . '[success]');
-update_post_meta($eventID, 'wpcf-paddle-payment-event-id', $eventID . '[success]');
-	
-if (isset($data["product_id"]) && !empty($data["product_id"])) {	
-update_post_meta($eventID, 'wpcf-paddle-payment-product-id', $data["product_id"] . '[success]');	
+$product = $passthrough["art"];
+
+// $email erst befüllen, wenn $fields["email"] nicht mehr leer ist. Das dauert einen Moment länger..
+if (isset($fields["email"]) && !empty($fields["email"])) {
+$email = $fields["email"];
 }
 
-if (isset($data["email"]) && !empty($data["email"])) {
-update_post_meta($eventID, 'wpcf-paddle-payment-email', $data["email"] . '[success]' . ' / ' . $verification);
+// die $eventID darf niemals leer sein, sonst gibt es eine Fehlermeldung bei update_post_meta ()
+if (isset($passthrough["veranstaltung"]) && !empty($passthrough["veranstaltung"])) {	
+// Event auf Premium Event updaten
+update_post_meta($eventID, 'wpcf-rask-premium', '1');
 }
 
+// die $locationID darf niemals leer sein, sonst gibt es eine Fehlermeldung bei update_post_meta ()
+if ($product == 'PREMIUM-EVENT-ABONNEMENT' && isset($passthrough["reitanlage"]) && !empty($passthrough["reitanlage"])) {
+// Reitanlage auf auf Premium Event Abonnement updaten
+update_post_meta($locationID, 'wpcf-cuteberry-premium-events-monatsabo', '1');
+}	
+
 }
+
+
 	
 
 
