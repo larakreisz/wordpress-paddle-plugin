@@ -8,13 +8,13 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link                https://github.com/larakreisz
- * @since               December 07, 2021
- * @package             Lara Rest Plugin
+ * @link                https://github.com/larakreisz/wordpress-paddle-plugin
+ * @since               February 28, 2022
+ * @package             WordPress Paddle Plugin
  * 
  * @wordpress-plugin
  * Plugin Name:         WordPress Paddle Plugin
- * Plugin URI:          https://test.cuteberry.de/
+ * Plugin URI:          https://github.com/larakreisz/wordpress-paddle-plugin
  * Description:         The plugin connects WordPress and Paddle and allows you to perform custom action after payment.
  * Version:             1.0
  * Author:              Lara Kreisz
