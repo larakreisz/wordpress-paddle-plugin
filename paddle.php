@@ -86,11 +86,8 @@ update_post_meta($locationID, 'wpcf-cuteberry-premium-events-monatsabo', '1');
 
 }
 
-
 	
-
-
-
+	
    
 echo json_encode([
         "code" => 200,
