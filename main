@@ -69,14 +69,17 @@ if (isset($fields["email"]) && !empty($fields["email"])) {
 $email = $fields["email"];
 }
 
-// die $eventID darf niemals leer sein, sonst gibt es eine Fehlermeldung bei update_post_meta ()
-if (isset($passthrough["veranstaltung"]) && !empty($passthrough["veranstaltung"])) {	
-// Event auf Premium Event updaten
+
+// PRODUCT: PREMIUM EVENT (ONE-TIME-PAYMENT)
+if ($product == 'PREMIUM-EVENT-EINMALZAHLUNG' && isset($eventID) && !empty($eventID)) {	
+// Event upgraden auf Premium Event
 update_post_meta($eventID, 'wpcf-rask-premium', '1');
 }
 
-// die $locationID darf niemals leer sein, sonst gibt es eine Fehlermeldung bei update_post_meta ()
-if ($product == 'PREMIUM-EVENT-ABONNEMENT' && isset($passthrough["reitanlage"]) && !empty($passthrough["reitanlage"])) {
+// PRODUCT: PREMIUM EVENT (SUBSCRIPTION)
+if ($product == 'PREMIUM-EVENT-ABONNEMENT' && isset($locationID) && !empty($locationID) && isset($eventID) && !empty($eventID)) {
+// Event upgraden auf Premium Event
+update_post_meta($eventID, 'wpcf-rask-premium', '1');
 // Reitanlage auf auf Premium Event Abonnement updaten
 update_post_meta($locationID, 'wpcf-cuteberry-premium-events-monatsabo', '1');
 }	
